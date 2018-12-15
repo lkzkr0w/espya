@@ -14,6 +14,13 @@ wtf = {
        'Y':'15', 'Z':'17'
       }
 
+# Dominios validos
+# ABC123
+# 123ABC
+# 123ABCD
+# A1234567
+# AB123CD
+
 # RegEx para validar el dominio
 regexpat = re.match(r'^[A-Z]{3}[0-9]{3}$|^[0-9]{3}[A-Z]{3,4}$|^[A-Z][0-9]{7}$|^[A-Z]{2}[0-9]{3}[A-Z]{2}$', sys.argv[1])
 
