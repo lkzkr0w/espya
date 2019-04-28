@@ -2,7 +2,7 @@ import sys
 import re
 
 # Tabla de valores
-wtf = {
+tabval = {
        'A':'14', 'B':'01', 'C':'00',
        'D':'16', 'E':'05', 'F':'20',
        'G':'19', 'H':'09', 'I':'24',
@@ -22,15 +22,15 @@ wtf = {
 # AB123CD
 
 # RegEx para validar el dominio
-regexpat = re.match(r'^[A-Z]{3}[0-9]{3}$|^[0-9]{3}[A-Z]{3,4}$|^[A-Z][0-9]{7}$|^[A-Z]{2}[0-9]{3}[A-Z]{2}$', sys.argv[1])
+regexdom = re.match(r'^[A-Z]{3}[0-9]{3}$|^[0-9]{3}[A-Z]{3,4}$|^[A-Z][0-9]{7}$|^[A-Z]{2}[0-9]{3}[A-Z]{2}$', sys.argv[1])
 
 # Crea una lista para procesar el dominio
 def makelist(string):
     listareves = []
     for i in string:
-        if i in wtf:
-            listareves.append(int(wtf[i][:1]))
-            listareves.append(int(wtf[i][1:]))
+        if i in tabval:
+            listareves.append(int(tabval[i][:1]))
+            listareves.append(int(tabval[i][1:]))
         else:
             listareves.append(int(i))
     listareves = listareves[::-1]
@@ -44,19 +44,19 @@ def splitlist(listdv):
     return ldv1, ldv2
 
 # Checkea si el dominio es valido
-if regexpat is None:
+if regexdom is None:
     print('[-] Dominio invalido')
     exit()
 
-pat = makelist(sys.argv[1])
-listaDigito1, listaDigito2 = splitlist(pat)
-dv1 = sum(listaDigito1)
-dv2 = sum(listaDigito2)
+dom = makelist(sys.argv[1])
+listadigito1, listadigito2 = splitlist(dom)
+dv1 = sum(listadigito1)
+dv2 = sum(listadigito2)
 while(dv1 > 9):
-    listaDigito1 = makelist(str(dv1))
-    dv1 = sum(listaDigito1)
+    listadigito1 = makelist(str(dv1))
+    dv1 = sum(listadigito1)
 while(dv2 > 9):
-    listaDigito2 = makelist(str(dv2))
-    dv2 = sum(listaDigito2)
+    listadigito2 = makelist(str(dv2))
+    dv2 = sum(listadigito2)
 
 print("[+] El digito verificador de "+sys.argv[1]+" es "+str(dv1)+""+str(dv2))
