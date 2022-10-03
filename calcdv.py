@@ -20,9 +20,10 @@ tabval = {
 # 123ABCD
 # A1234567
 # AB123CD
+# A123BCD
 
 # RegEx para validar el dominio
-regexdom = re.match(r'^[A-Z]{3}[0-9]{3}$|^[0-9]{3}[A-Z]{3,4}$|^[A-Z][0-9]{7}$|^[A-Z]{2}[0-9]{3}[A-Z]{2}$', sys.argv[1])
+regexdom = re.match(r'^[A-Z]{3}[0-9]{3}$|^[0-9]{3}[A-Z]{3,4}$|^[A-Z][0-9]{7}$|^[A-Z]{2}[0-9]{3}[A-Z]{2}$|^[A-Z][0-9]{3}[A-Z]{3}$', sys.argv[1])
 
 # Crea una lista para procesar el dominio
 def makelist(string):
