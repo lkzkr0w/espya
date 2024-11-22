@@ -1,63 +1,64 @@
 import sys
 import re
 
-# Tabla de valores
-tabval = {
-       'A':'14', 'B':'01', 'C':'00',
-       'D':'16', 'E':'05', 'F':'20',
-       'G':'19', 'H':'09', 'I':'24',
-       'J':'07', 'K':'21', 'L':'08',
-       'M':'04', 'N':'13', 'O':'25',
-       'P':'22', 'Q':'18', 'R':'10',
-       'S':'02', 'T':'06', 'U':'12',
-       'V':'23', 'W':'11', 'X':'03',
-       'Y':'15', 'Z':'17'
-      }
+# Table of values (stored directly as tuples for easy unpacking)
+TAB_VAL = {
+    'A': (1, 4), 'B': (0, 1), 'C': (0, 0),
+    'D': (1, 6), 'E': (0, 5), 'F': (2, 0),
+    'G': (1, 9), 'H': (0, 9), 'I': (2, 4),
+    'J': (0, 7), 'K': (2, 1), 'L': (0, 8),
+    'M': (0, 4), 'N': (1, 3), 'O': (2, 5),
+    'P': (2, 2), 'Q': (1, 8), 'R': (1, 0),
+    'S': (0, 2), 'T': (0, 6), 'U': (1, 2),
+    'V': (2, 3), 'W': (1, 1), 'X': (0, 3),
+    'Y': (1, 5), 'Z': (1, 7)
+}
 
-# Dominios validos
-# ABC123
-# 123ABC
-# 123ABCD
-# A1234567
-# AB123CD
-# A123BCD
+# Regex for validating domains
+VALID_DOMAINS_REGEX = re.compile(
+    r'^[A-Z]{3}[0-9]{3}$|^[0-9]{3}[A-Z]{3,4}$|^[A-Z][0-9]{7}$|^[A-Z]{2}[0-9]{3}[A-Z]{2}$|^[A-Z][0-9]{3}[A-Z]{3}$'
+)
 
-# RegEx para validar el dominio
-regexdom = re.match(r'^[A-Z]{3}[0-9]{3}$|^[0-9]{3}[A-Z]{3,4}$|^[A-Z][0-9]{7}$|^[A-Z]{2}[0-9]{3}[A-Z]{2}$|^[A-Z][0-9]{3}[A-Z]{3}$', sys.argv[1])
+def validate_domain(domain):
+    """Validates the domain format against predefined rules."""
+    return VALID_DOMAINS_REGEX.match(domain)
 
-# Crea una lista para procesar el dominio
-def makelist(string):
-    listareves = []
-    for i in string:
-        if i in tabval:
-            listareves.append(int(tabval[i][:1]))
-            listareves.append(int(tabval[i][1:]))
-        else:
-            listareves.append(int(i))
-    listareves = listareves[::-1]
-    return listareves
+def make_list(domain):
+    """
+    Converts a domain string into a list of integers based on TAB_VAL.
+    Alphanumeric characters are expanded, and the order is reversed.
+    """
+    return [
+        digit for char in domain[::-1]
+        for digit in (TAB_VAL[char] if char in TAB_VAL else (int(char),))
+    ]
 
+def calculate_verifier(list_values):
+    """Calculates the verifier digit by reducing sums iteratively to a single digit."""
+    total = sum(list_values)
+    while total > 9:
+        total = sum(int(digit) for digit in str(total))
+    return total
 
-# Divide la lista de makelist() para poder calcular el digito verificador
-def splitlist(listdv):
-    ldv1 = listdv[::2]
-    ldv2 = listdv[1::2]
-    return ldv1, ldv2
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: python script.py <domain>")
+        sys.exit(1)
 
-# Checkea si el dominio es valido
-if regexdom is None:
-    print('[-] Dominio invalido')
-    exit()
+    domain = sys.argv[1]
 
-dom = makelist(sys.argv[1])
-listadigito1, listadigito2 = splitlist(dom)
-dv1 = sum(listadigito1)
-dv2 = sum(listadigito2)
-while(dv1 > 9):
-    listadigito1 = makelist(str(dv1))
-    dv1 = sum(listadigito1)
-while(dv2 > 9):
-    listadigito2 = makelist(str(dv2))
-    dv2 = sum(listadigito2)
+    if not validate_domain(domain):
+        print("[-] Invalid domain")
+        sys.exit(1)
 
-print("[+] El digito verificador de "+sys.argv[1]+" es "+str(dv1)+""+str(dv2))
+    reversed_values = make_list(domain)
+    odd_positions = reversed_values[::2]
+    even_positions = reversed_values[1::2]
+
+    verifier_1 = calculate_verifier(odd_positions)
+    verifier_2 = calculate_verifier(even_positions)
+
+    print(f"[+] The verifier digit for {domain} is {verifier_1}{verifier_2}")
+
+if __name__ == "__main__":
+    main()
