@@ -1,7 +1,6 @@
 import sys
 import re
 
-# Table of values (stored directly as tuples for easy unpacking)
 TAB_VAL = {
     'A': (1, 4), 'B': (0, 1), 'C': (0, 0),
     'D': (1, 6), 'E': (0, 5), 'F': (2, 0),
@@ -14,27 +13,20 @@ TAB_VAL = {
     'Y': (1, 5), 'Z': (1, 7)
 }
 
-# Regex for validating domains
 VALID_DOMAINS_REGEX = re.compile(
     r'^[A-Z]{3}[0-9]{3}$|^[0-9]{3}[A-Z]{3,4}$|^[A-Z][0-9]{7}$|^[A-Z]{2}[0-9]{3}[A-Z]{2}$|^[A-Z][0-9]{3}[A-Z]{3}$'
 )
 
 def validate_domain(domain):
-    """Validates the domain format against predefined rules."""
     return VALID_DOMAINS_REGEX.match(domain)
 
 def make_list(domain):
-    """
-    Converts a domain string into a list of integers based on TAB_VAL.
-    Alphanumeric characters are expanded, and the order is reversed.
-    """
     return [
         digit for char in domain[::-1]
         for digit in (TAB_VAL[char] if char in TAB_VAL else (int(char),))
     ]
 
 def calculate_verifier(list_values):
-    """Calculates the verifier digit by reducing sums iteratively to a single digit."""
     total = sum(list_values)
     while total > 9:
         total = sum(int(digit) for digit in str(total))
